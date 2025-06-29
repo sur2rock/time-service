@@ -2,26 +2,26 @@ name: Auto Update time.json
 
 on:
   schedule:
-    - cron: '0 * * * *'     # Runs hourly (customize if needed)
-  workflow_dispatch:        # Manual trigger
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   update-time:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
 
-      - name: Get UTC time & write file
+      - name: Update time.json
         run: |
           TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "{ \"currentTime\": \"$TIME\" }" > time.json
 
-      - name: Commit & push
+      - name: Commit and push
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "TimeBot"
+          git config user.email "sur2rock@example.com"
           git add time.json
-          git commit -m "Auto-update: $TIME" || echo "No changes"
+          git commit -m "Update time.json: $TIME" || echo "No changes"
           git push
